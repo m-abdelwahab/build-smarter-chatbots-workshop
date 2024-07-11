@@ -8,6 +8,20 @@ This workshop is perfect for developers who have a basic understanding of web de
 
 <!-- Video of the chatbot app -->
 
+## Workshop Structure & outline
+
+The workshop includes a mix of two activities:
+- Conceptual overviews: these are explanations of key concepts that you need to understand to complete the exercises.
+- Exercises: these are hands-on activities that guide you to achieve a specific goal. You will have a chance to implement the concepts you learned in the conceptual overviews and you will have code snippets to help you along the way.
+
+The workshop is divided into the following sections:
+- Exercise #0 - Setting up the project & development environment
+- Conceptual Overview - what are LLMs?
+- Exercise #1 - Adding AI capabilities to the chatbot
+- Conceptual Overview - what is Retreival-Augmented Generation (RAG)?
+- Exercise #2 - using Postgres as a vector store
+- Exercise #3 - adding RAG to the chatbot
+
 ## Prerequisites
 
 To complete this workshop, you'll need to have basic working knowledge of:
@@ -16,30 +30,13 @@ To complete this workshop, you'll need to have basic working knowledge of:
 - Working with the command-line and installing Node.js packages
 - SQL
 
-The app you'll build today has both a front-end and back-end components. This workshop focuses on building the backend, it won't dive deep into the front-end.
-
-
-## Workshop Structure & outline
-
-The workshop includes a mix of two activities:
-- Conceptual overviews: these are short explanations of key concepts that you need to understand to complete the exercises.
-- Exercises: these are hands-on activities that guide you to achieve a specific goal.
-
-The workshop is divided into the following sections:
-- Exercise #0 - Setting up the project & development environment
-- Conceptual Overview - what are LLMs?
-- Exercise #1 - Adding AI capabilities to the chatbot
-- Conceptual Overview - what is RAG?
-- Exercise #2 - setting up the vector store
-- Exercise #3 - adding RAG to the chatbot
-
-You can find the final state of the project under a git branch called `final`. You can check out this branch to see the final state of the project.
+The app you'll build today has both a front-end and back-end components. This workshop focuses on building the backend, and won't dive deep into the front-end.
 
 ## Exercise #0 - Setting up the project & development environment
 
 In this exercise, you'll set up your development environment. You can either use your local machine or instead use Stackblitz, an online development environment.
 
-<!-- Stackblitz button -->
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/m-abdelwahab/build-smarter-chatbots)
 
 Using Stackblitz will automatically install the project's dependencies for you and start the development server by running `npm run dev` for you.
 
@@ -319,19 +316,20 @@ For example, the distance between the vector representing the word `banana` and 
 
 ### Generating vector embeddings
 
-One way to generate vector embeddings is by using an embeddings API. Here’s an example of how you can use Mistral's embeddings API. Here's how it can be done using the Mistral API and the Vercel AI SDK:
+One way to generate vector embeddings is by using an embeddings API. Here’s an example of how you can use Mistral's embeddings API and the Vercel AI SDK:
 
 ```ts
 import { mistral } from "@ai-sdk/mistral";
 import { embed } from "ai";
 
+// 'embedding' is an array of numbers.
 const { embedding } = await embed({
   model: mistral.embedding("mistral-embed"),
   value: "sunny day at the beach",
 });
 ```
 
-The Vercel AI SDK also provides an `embedMany` function that can be used to embed many values at once (batch embedding).
+The Vercel AI SDK also provides an `embedMany()` function that can be used to embed many values at once (batch embedding).
 
 ```ts
 import { mistral } from "@ai-sdk/mistral";
@@ -398,7 +396,7 @@ Supported distance functions include:
 
 To provide the chatbot with extra information, this is what you need to do:
 
-1. Convert the existing data set that we know is factually correct to vector embeddings
+1. Convert the existing data set that we know is factually correct to vector embeddings and store it in a vector database
 2. When a user gives us a prompt, we need to convert it into a vector embedding
 3. Find the vector embedding in our data set that is closest to the prompt's vector embedding representation
 4. Return the actual data associated with our data set embedding
@@ -411,6 +409,23 @@ This is where the Retrieval-Augmented Generation (RAG) architecture comes in. It
 ### Signing up for a Neon account
 
 To set up the vector store, you'll need to sign up for a Neon account. Neon is fully managed Postgres database that allows you to store and query vector embeddings in Postgres.
+
+After you sign up, you are guided through some onboarding steps that ask you to create a Project. After that, you are presented with the project Quickstart where you can grab a connection string to connect to your database.
+
+
+<img width="1512" alt="Screenshot 2024-07-11 at 8 16 47 AM" src="https://github.com/m-abdelwahab/build-smarter-chatbots/assets/27310414/59c445e3-81ec-4463-8eac-9981f785c2ad">
+
+
+<img width="1512" alt="Screenshot 2024-07-11 at 8 17 07 AM" src="https://github.com/m-abdelwahab/build-smarter-chatbots/assets/27310414/1c840dde-2702-4135-91aa-86e4ddf847a6">
+
+In Neon, everything starts with the Project
+
+It is the top-level container that holds your branches, databases, and roles. Typically, you should create a project for each repository in your application. This allows you to manage your database branches just like you manage your code branches: a branch for production, staging, development, new features, previews, and so forth.
+
+We create your default branch main for you
+
+main is the default (primary) branch and hosts your database, role, and a compute endpoint that you can connect your application to.
+
 
 To set up the database, you can run the following command:
 
@@ -471,11 +486,23 @@ In this exercise, you will modify the `src/app/api/chat/route.ts` file to query 
 
 Here are the steps that you need to take:
 
-- Connect to the Neon database using the `neon` function from the `@neondatabase/serverless` package.
-- Embed the user's message using the Mistral AI model.
-- Query the database for the most similar text content based on the user's message embedding.
-- Return the most similar text content as the response to the user's message.
-- Pass the response to the LLM as a system prompt to generate the final response.
+1. Connect to the Neon database using the `neon` function from the `@neondatabase/serverless` package.
+1. Embed the user's message using the Mistral AI model.
+1. Query the database for the most similar text content based on the user's message embedding. You can use the `<->` operator to calculate the Euclidean distance between the user's message embedding and the embeddings stored in the database. Sort the results by the calculated distance and return the most similar text content.
+1. Return the most similar text content as the response to the user's message.
+1. Pass the response to the LLM as a system prompt to generate the final response.
 
-Hint: use the `setup.ts` file to see how you can
 
+To get started, you can use the following code snippet as a reference:
+
+```ts
+
+```
+
+
+Here are some resources you can use:
+- [API reference for the `embed()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/embed)
+- [Neon Serverless Driver documentation](https://neon.tech/docs/serverless/serverless-driver#use-the-driver-over-http)
+
+>[!TIP]
+>Hint: You can use the `sql` template literal from the Neon package to run SQL queries. For example, you can use `sql` to run a query that retrieves the most similar text content based on the user's message embedding.
