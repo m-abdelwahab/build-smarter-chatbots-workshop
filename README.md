@@ -309,7 +309,7 @@ This is where vector embeddings come in.
 
 A vector embedding is a vector(list) of floating point numbers. It can represent unstructured data (e.g., text, images, audio, or other types of information).
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/7cb3de66-c6a5-403e-9e05-8c141aaba749/d55c3a50-c0a8-4b27-9a3b-2953114baa83/Untitled.png)
+![RAG](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*YLrQl5CM7NjQPcfTCrf-sQ.png)
 
 What's powerful about embeddings is that they can capture the meaning behind the text and can be used to measure the relatedness of text strings.
 
