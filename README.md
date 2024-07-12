@@ -204,13 +204,13 @@ const model = mistral('mistral-large-latest');
 
 The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To generate an API key, you must do the following:
 
-1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
-2. Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
-3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
-
 ➡️ `TODO:` 
 1. Install the Mistral AI provider package
-2. Copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this: 
+2. Generate an API key from the Mistral console.
+   1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
+   2.  Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
+   3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
+3. Copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this: 
 
 ```bash
 MISTRAL_API_KEY=your-api-key
