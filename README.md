@@ -8,11 +8,13 @@ This workshop is perfect for developers who have a basic understanding of web de
 
 <!-- Video of the chatbot app -->
 
-## Workshop Structure & outline
+## Workshop activities
 
 The workshop includes a mix of two activities:
 - Conceptual overviews: these are explanations of key concepts that you need to understand to complete the exercises.
 - Exercises: these are hands-on activities that guide you to achieve a specific goal. You will have a chance to implement the concepts you learned in the conceptual overviews and you will have code snippets to help you along the way.
+
+## Workshop outline
 
 The workshop is divided into the following sections:
 - Exercise #0 - Setting up the project & development environment
@@ -38,7 +40,7 @@ In this exercise, you'll set up your development environment. You can either use
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/m-abdelwahab/build-smarter-chatbots)
 
-Using Stackblitz will automatically install the project's dependencies for you and start the development server by running `npm run dev` for you.
+Using Stackblitz will automatically install the project's dependencies for you and start the development server by running `npm install && npx next dev` for you.
 
 <details>
   <summary>Setting up the project on your local machine</summary>
@@ -70,14 +72,14 @@ This will start a local development server at [http://localhost:3000](http://loc
 
 </details>
 
-### Project overview
+As it stands, this chatbot is non-functional (yet)
 
-As it stands, this chatbot is non-functional because we haven't set up an API endpoint (yet)
+### Project overview
 
 You'll find the following directory structure:
 
 ```
-we-are-developers-2024-workshop/
+build-better-chatbots/
 ┣ public/
 ┣ src/
 ┃ ┗ app/
@@ -104,9 +106,16 @@ we-are-developers-2024-workshop/
 
 The `.env.local.example` and `setup.ts` files will be used later.
 
+
+Next.js uses a file-system based router where folders located under the `app` directory are used to define routes. Each folder represents a route segment that maps to a URL segment. To create a nested route, you can nest folders inside each other.
+
+![Next.js file-system based router](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Froute-segments-to-path-segments.png&w=3840&q=75)
+
 The app has a single route defined in the `src/app/page.tsx` file. This route will be rendered at the index route `/`.
 
-There is also an API route defined in the `src/app/api/chat/route.ts` file. This route will be used to handle the chatbot's requests. This is where you'll spend most of your time during this workshop.
+Adding a special `route.ts` file inside a folder will make route segments publicly accessible as API endpoints.
+
+In this project, we have a `app/api/chat` folder that represents the `/api/chat` route. Inside this folder, you'll find a `route.ts` file that will be used to handle the chatbot's requests. You're going to implement the logic to handle the chatbot's requests in this file.
 
 
 <details>
@@ -166,21 +175,15 @@ LLMs are used in a wide range of applications:
 -  And more...
 
 
-For this workshop you'll use <> by [Mistral](https://mistral.ai). Mistral provides access to this model through their API, allowing developers to integrate AI capabilities into various applications.
+For this workshop you'll use the [Mistral 7B model](https://docs.mistral.ai/getting-started/models/#overview)	. Mistral provides access to this model through their API, allowing developers to integrate AI capabilities into various applications.
 
 ## Exercise #1 - Adding AI capabilities to the chatbot
 
-The goal of this exercise is to make the chatbot work. Right now, if you try the app it will not work because we have an API endpoint that is not implemented.
+The goal of this exercise is to make the chatbot work. Right now, if you try the app will not work because we have an API endpoint that is not implemented.
 
-Next.js uses a file-system based router where folders located under the `app` directory are used to define routes. Each folder represents a route segment that maps to a URL segment. To create a nested route, you can nest folders inside each other.
 
-![Next.js file-system based router](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Froute-segments-to-path-segments.png&w=3840&q=75)
 
-Adding a special `route.ts` file inside a folder will make route segments publicly accessible as API endpoints.
-
-In this project, we have a `app/api/chat` folder that represents the `/api/chat` route. Inside this folder, you'll find a `route.ts` file that will be used to handle the chatbot's requests. You're going to implement the logic to handle the chatbot's requests in this file.
-
-If you open this file, you'll find the following code:
+If you open the `app/api/chat/route.ts` file, you'll find the following code:
 
 ```ts
 // app/api/chat/route.ts
@@ -192,14 +195,17 @@ export async function POST(req: Request) {
 
 ```
 
-The code defines an asynchronous function named `POST` that will handle POST requests to this route. The function takes a single parameter `req` of type `Request`, which represents the incoming HTTP request.
+The code defines an asynchronous function named `POST` that handle POST requests made to this route. The function takes a single parameter `req` of type `Request`, which represents the incoming HTTP request.
 
-We then use destructuring to extract a messages property from the JSON body of the request. This property will contain an array of messages sent by the user. Finally, we return a new Response object with a message indicating that the chat messages have been received.
+We then use destructuring to extract a `messages` property from the JSON body of the request. This property will contain an array of messages sent by the user. Finally, we return a new Response object with a message indicating that the chat messages have been received.
 
-We want to pass the messages to an AI model and return the generated text as response. To do that, we'll use the Vercel AI SDK, which simplifies working with LLMs by offering a standardized way of integrating them into your app. You get a unified interface that allows you to switch between AI model providers (e.g, OpenAI, Mistral, Google, etc.) with ease while using the same API for all providers.
+We want to pass the messages array to an AI model and return the generated text as response.
+
+To do that, we'll use Mistral's API along with the Vercel AI SDK, which simplifies working with LLMs by offering a standardized way of integrating them into your app. You get a unified interface that allows you to switch between AI model providers (e.g, OpenAI, Mistral, Google, etc.) with ease while using the same API for all providers. 
 
 ![Vercel AI SDK](https://sdk.vercel.ai/images/ai-sdk-diagram.png)
 
+Here's a quick overview of the Vercel AI SDK:
 
 Each AI company provider (such as OpenAI, Mistral, etc.) has its own dedicated npm package that lists the available models. For example, here's how you can install the [Mistral AI provider package](https://sdk.vercel.ai/providers/ai-sdk-providers/mistral):
 
@@ -219,7 +225,15 @@ You can then specify which model you want to use by passing the model ID to the 
 const model = mistral('mistral-large-latest');
 ```
 
-The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To add it, you can copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this:
+The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To get generate an API key, you must do the following:
+
+<!-- Image of Mistral's console -->
+1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
+2. Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
+3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
+
+
+`TODO`: Copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this: 
 
 ```bash
 MISTRAL_API_KEY=your-api-key
@@ -227,12 +241,13 @@ MISTRAL_API_KEY=your-api-key
 DATABASE_URL=
 ```
 
-To get generate an API key:
-1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
-2. Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
-3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
+>[!INFO]
+> The `.env` file included by Stackblitz will work as well but `.env.local` is the recommended approach when using environment variables locally with Next.js.
 
-Once you install the provider package and have set up an API key, you can then use functions from the Vercel AI SDK core package (it has been added to your project already and was installed by running `npm install ai`). For example, here's how uou can use the `streamText()` function for interactive use cases such as chat bots and other real-time applications:
+
+Once you install the provider package and have set up an API key, you can then use functions from the Vercel AI SDK core package (it has been added to your project already and was installed by running `npm install ai`). 
+
+For example, here's how you can use the `streamText()` function for interactive use cases such as chat bots and other real-time applications:
 
 ```ts
 import { openai } from '@ai-sdk/openai';
@@ -254,7 +269,7 @@ Here are some resources you can use:
 - [Mistral AI provider documentation](https://sdk.vercel.ai/providers/ai-sdk-providers/mistral)
 
 >[!TIP]
->Hint: The `streamText()` function accepts a `messages` parameter that should contain an array of messages sent by the user. 
+>The `streamText()` function accepts a `messages` parameter that should contain an  array of messages sent by the user. 
 
 You can test that the chatbot is working by starting the development server (`npm run dev`) and submitting a message. You should see a response from the chatbot.
 
@@ -269,6 +284,7 @@ You can test that the chatbot is working by starting the development server (`np
 
   export async function POST(req: Request) {
     const { messages } = await req.json();
+
     const result = await streamText({
       model: mistral("open-mistral-7b"),
       messages,
@@ -293,9 +309,7 @@ User: What's my favorite food?
 AI: I don't know your favorite food yet. Could you tell me what it is?
 ```
 
-Fortunately, we can provide the LLM with extra information to generate the correct response. Today, you’ll learn how.
-
-But first, there's an important question: assuming we already have data that we know is factually correct, how do we:
+Fortunately, we can provide the LLM with extra information to generate the correct response. But first, there's an important question: assuming we already have data that we know is factually correct, how do we:
 
 - Understand what the user means by their prompt
 - Know which exact information to give the LLM, given that we have unlimited prompts
@@ -306,7 +320,7 @@ This is where vector embeddings come in.
 
 A vector embedding is a vector(list) of floating point numbers. It can represent unstructured data (e.g., text, images, audio, or other types of information).
 
-![RAG](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*YLrQl5CM7NjQPcfTCrf-sQ.png)
+
 
 What's powerful about embeddings is that they can capture the meaning behind the text and can be used to measure the relatedness of text strings.
 
@@ -388,11 +402,11 @@ Supported distance functions include:
 - `<->` - L2 distance
 - `<#>` - (negative) inner product
 - `<=>` - cosine distance
-- `<+>` - L1 distance (added in 0.7.0)
+- `<+>` - L1 distance
 
 ### RAG architecture
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/7cb3de66-c6a5-403e-9e05-8c141aaba749/4e92a201-4055-4789-9566-950054a552ae/Untitled.png)
+![RAG](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*YLrQl5CM7NjQPcfTCrf-sQ.png)
 
 To provide the chatbot with extra information, this is what you need to do:
 
@@ -408,7 +422,7 @@ This is where the Retrieval-Augmented Generation (RAG) architecture comes in. It
 
 ### Signing up for a Neon account
 
-To set up the vector store, you'll need to sign up for a Neon account. Neon is fully managed Postgres database that allows you to store and query vector embeddings in Postgres.
+To set up the vector store, you'll need to sign up for a [Neon account](https://console.neon.tech/signup). Neon is fully managed Postgres database that allows you to store and query vector embeddings in Postgres.
 
 After you sign up, you are guided through some onboarding steps that ask you to create a Project. After that, you are presented with the project Quickstart where you can grab a connection string to connect to your database.
 
@@ -496,13 +510,59 @@ Here are the steps that you need to take:
 To get started, you can use the following code snippet as a reference:
 
 ```ts
+// app/api/chat/route.ts
+import { mistral } from "@ai-sdk/mistral";
+import { streamText, embed } from "ai";
+import { neon } from "@neondatabase/serverless";
 
+export async function POST(req: Request) {
+	const { messages } = await req.json();
+
+	// Get the user's last message
+	const prompt = messages[messages.length - 1].content;
+
+	// Embed the user's last message
+
+	// Connect to the Neon database
+
+	// find the most similar document to the user's last message
+
+	// Stream the user's messages and the most similar document to the model and include the document in the system message. Here's an example of how you can do this:
+
+  const documents = await sql`...`;
+
+  // The Vercel AI SDK, allows you to set a system message that provides additional context to the model. This message is not included in the final response to the user. You can use the following prompt to include the most similar document in the system message:
+  // "You have access to information that might help answer the user's question. Use this information if it's relevant to the user's query, but don't mention it explicitly unless asked. If the information isn't relevant, rely on your general knowledge to answer. Here is the information: <most-relevant-document>"
+	
+  const result = ...
+
+	return result.toAIStreamResponse();
+}
 ```
-
 
 Here are some resources you can use:
 - [API reference for the `embed()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/embed)
 - [Neon Serverless Driver documentation](https://neon.tech/docs/serverless/serverless-driver#use-the-driver-over-http)
+- [pgvector documentation on querying vectors](https://github.com/pgvector/pgvector?tab=readme-ov-file#querying)
+- [API reference for the `streamText()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/stream-text)
+- [Mistral AI provider documentation](https://sdk.vercel.ai/providers/ai-sdk-providers/mistral)
 
->[!TIP]
->Hint: You can use the `sql` template literal from the Neon package to run SQL queries. For example, you can use `sql` to run a query that retrieves the most similar text content based on the user's message embedding.
+
+To make sure that the chatbot is working as expected, you can start the development server (`npm run dev`) and submit a message. You should see a response from the chatbot that is relevant to the user's message.
+
+Here are some example prompts you can use to test the chatbot:
+
+> "What's the weather like today?"
+> "Tell me about the best beaches in the world"
+
+
+
+<details>
+  <summary>Solution</summary>
+
+  Here's the solution to the exercise:
+
+  ```ts
+
+  ```
+</details>
