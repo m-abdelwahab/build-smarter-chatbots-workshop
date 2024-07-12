@@ -37,6 +37,8 @@ Choose between using your local machine or Stackblitz, an online development env
 
 Stackblitz will automatically set everything up for you. It will automatically install the project's dependencies for you and start the development server by running `npm install && npx next dev` for you.
 
+<img width="1512" alt="Screenshot 2024-07-12 at 4 11 26 AM" src="https://github.com/user-attachments/assets/c6bfae94-53b7-4a89-958f-f9c3401e25d6">
+
 <details>
   <summary>Local setup instructions</summary>
 
