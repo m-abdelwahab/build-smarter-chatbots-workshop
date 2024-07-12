@@ -13,7 +13,7 @@ The workshop combines two types of activities:
 ## Workshop outline
 
 1. Exercise #0: Set up your project and development environment
-2. Concept Overview: Understanding Large Language Models (LLMs)
+2. Concept Overview: What are Large Language Models (LLMs)
 3. Exercise #1: Add AI capabilities to your chatbot
 4. Concept Overview: Exploring Retrieval-Augmented Generation (RAG)
 5. Exercise #2: Use Postgres as a vector store
@@ -29,7 +29,7 @@ To get the most out of this workshop, you should have:
 
 This workshop focuses primarily on the backend and won't dive into the front-end part of the app you'll be building today.
 
-## Exercise #0: Setting Up Your Environment
+## Exercise #0: Set up your project and development environment
 
 Choose between using your local machine or Stackblitz, an online development environment.
 
@@ -58,9 +58,6 @@ Stackblitz will automatically set everything up for you. It will automatically i
 
   This starts a local server at [http://localhost:3000](http://localhost:3000/)
 </details>
-
-
-As it stands, this chatbot is non-functional (yet)
 
 ### Project overview
 
@@ -98,8 +95,9 @@ Next.js uses a file-system based router where folders located under the `app` di
 
 The app has a single route defined in the `src/app/page.tsx` file. This route will be rendered at the index route `/`. This is the page that will be displayed when you visit the app in the browser and where you'll see the chatbot UI.
 
-When you add a special `route.ts` file inside a folder, it will make the full path of the folder a route. For example, in this project you have a `app/api/chat` with a `route.ts` file nested under it. This will create a route at `/api/chat` which will be used to handle the chatbot's requests. You're going to implement the logic to handle the chatbot's requests in this file.
+When you add a special `route.ts` file inside a folder, it will make the full path of the folder an API endpoint. For example, in this project you have a `app/api/chat` with a `route.ts` file nested under it. This will create a route at `/api/chat` endpoint which will handle the chatbot's requests. 
 
+You're going to implement the logic to handle the chatbot's requests in this file.
 
 <details>
   <summary>Frontend code explanation</summary>
@@ -146,7 +144,7 @@ When you add a special `route.ts` file inside a folder, it will make the full pa
 </details>
 
 
-## Conceptual Overview - what are LLMs?
+## Conceptual Overview - What are Large Language Models (LLMs)?
 
 LLMs are AI models trained on vast amounts of text data to generate human-like text. They're used in chatbots, translation, content creation, and more.
 
@@ -155,7 +153,7 @@ LLMs are AI models trained on vast amounts of text data to generate human-like t
 We'll use the [Mistral 7B model](https://docs.mistral.ai/getting-started/models/#overview) via Mistral's API for this workshop.
 
 
-## Exercise #1 - Adding AI capabilities to the chatbot
+## Exercise #1 - Add AI capabilities to your chatbot
 
 Let's make the chatbot functional by implementing the API endpoint.
 
@@ -202,15 +200,14 @@ You can then specify which model you want to use by passing the model ID to the 
 const model = mistral('mistral-large-latest');
 ```
 
-The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To get generate an API key, you must do the following:
+The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To generate an API key, you must do the following:
 
-<!-- Image of Mistral's console -->
 1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
 2. Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
 3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
 
-
-`TODO`: Copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this: 
+➡️ `TODO:` Install the Mistral AI provider package
+➡️ `TODO`: Copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this: 
 
 ```bash
 MISTRAL_API_KEY=your-api-key
@@ -239,7 +236,7 @@ const result = await streamText({
 return result.toAIStreamResponse();
 ```
 
-`TODO:` Update the `app/api/chat/route.ts` file to use the Vercel AI SDK to generate text using the Mistral AI model. The generated text should be returned as the response to the user's messages.
+➡️ `TODO:` Update the `app/api/chat/route.ts` file to use the Vercel AI SDK to generate text using the Mistral AI model. The generated text should be returned as the response to the user's messages.
 
 Here are some resources you can use:
 - [API reference for the `streamText()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/stream-text)
@@ -273,10 +270,9 @@ You can test that the chatbot is working by starting the development server (`np
 </details>
 
 
-
 ## Conceptual Overview - what is RAG?
 
-LLMs will *always* give you an answer, but not necessarily the one you need or the correct one (this is what is known as a hallucination). 
+Large Language Models (LLMs) always provide an answer, but it may not always be the correct or needed one.
 
 Here's an example prompt:
 
@@ -286,56 +282,49 @@ User: What's my favorite food?
 AI: I don't know your favorite food yet. Could you tell me what it is?
 ```
 
-Fortunately, we can provide the LLM with extra information to generate the correct response.
+To generate more accurate responses, we can supply the LLM with additional context. 
+
+However, this raises an important question: Given a set of factually correct data, how do we:
+
+1. Interpret the user's intent from their prompt
+2. Determine which specific information to provide the LLM
 
 <img width="1512" alt="Screenshot 2024-07-12 at 9 11 22 AM" src="https://github.com/user-attachments/assets/38ae2ad6-032b-49d0-a7ef-023163363bf3">
 
 
-But first, there's an important question: assuming we already have data that we know is factually correct, how do we:
-
-- Understand what the user means by their prompt
-- Know which exact information to give the LLM, given that we have unlimited prompts
-
-This is where vector embeddings come in.
+This is where vector embeddings come into play.
 
 ### Vector Embeddings
 
-A vector embedding is a vector(list) of floating point numbers. It can represent unstructured data (e.g., text, images, audio, or other types of information).
+Vector embeddings are lists of floating-point numbers that can represent various types of unstructured data (text, images, audio, etc.). 
 
-What's powerful about embeddings is that they can capture the meaning behind the text and can be used to measure the relatedness of text strings.
+Their power lies in their ability to capture the meaning behind the data and measure the relatedness between different text strings.
+
 
 ![image](https://github.com/user-attachments/assets/b58a9679-8f37-41ed-adce-feeab302605d)
 *source: https://qdrant.tech/articles/what-are-embeddings/*
 
-The smaller the distance between two vectors, the more they're related to each other and vice-versa.
+The closer two vectors are in this space, the more related they are and vice-versa. 
 
-For example, the distance between the vector representing the word `banana` and the one representing the word `apple` will be smaller than the distance between a vector representing the word `banana` and the word `book` 
+For instance, the vectors for "banana" and "apple" would be closer together than the vectors for "banana" and "book".
 
 ### Generating vector embeddings
 
-One way to generate vector embeddings is by using an embeddings API. Here’s an example of how you can use Mistral's embeddings API and the Vercel AI SDK:
+You can create vector embeddings using an embeddings API. Here's an example using Mistral's API with the Vercel AI SDK:
 
-```ts
+```typescript
 import { mistral } from "@ai-sdk/mistral";
-import { embed } from "ai";
+import { embed, embedMany } from "ai";
 
-// 'embedding' is an array of numbers.
+// Single embedding
 const { embedding } = await embed({
   model: mistral.embedding("mistral-embed"),
   value: "sunny day at the beach",
 });
-```
 
-The Vercel AI SDK also provides an `embedMany()` function that can be used to embed many values at once (batch embedding).
-
-```ts
-import { mistral } from "@ai-sdk/mistral";
-import { embedMany } from 'ai';
-
-// 'embeddings' is an array of embedding objects (number[][]).
-// It is sorted in the same order as the input values.
+// Batch embedding. This is useful when you have a large number of values to embed and want to do it in a single request. We'll use this function later in the workshop.
 const { embeddings } = await embedMany({
-  model: openai.embedding('mistral-embed'),
+  model: mistral.embedding('mistral-embed'),
   values: [
     'sunny day at the beach',
     'rainy afternoon in the city',
@@ -344,28 +333,28 @@ const { embeddings } = await embedMany({
 });
 ```
 
-This is useful when you have a large number of values to embed and want to do it in a single request. We'll use this function later in the workshop.
-
 ### Storing and querying vector embeddings in Postgres with pgvector
 
-The process of representing data into embeddings and calculating the similarity between one or more items is known as vector search (or similarity search). It has a wide range of applications:
+Vector search (or similarity search) has numerous applications, including information retrieval, natural language processing, recommendation systems, and anomaly detection.
 
-- Information Retrieval: you can retrieve relevant information based on user queries since you can accurately search based on the meaning of the user query. (This is what YC idea matcher does)
-- Natural Language Processing: since embeddings capture the meaning of the text, you can use them to classify text and run sentiment analysis.
-- Recommendation Systems: You can recommend similar items based on a given set of items. (e.g., movies/products/books, etc.)
-- Anomaly Detection: since you can determine the similarity between items in a given dataset, you can determine items that don’t belong.
+Postgres can store and retrieve vector embeddings, eliminating the need for an external vector store in many AI and LLM applications. This possible through the [pgvector](https://github.com/pgvector/pgvector?tab=readme-ov-file#querying) extension, which provides efficient storage and querying mechanisms for vector data.
 
-Storing and retrieving vector embeddings can be done in Postgres. This is incredibly useful because it eliminates the need to introduce an external vector store when building AI and LLM applications if you're already using Postgres.
 
-To get started, you first enable the extension. You can do so by running `CREATE EXTENSION vector`
+Here's how to get started:
 
-You then need to create a column that stores the vector data
+	1.	Enable the pgvector extension:
 
-```sql
+```SQL
+CREATE EXTENSION vector;
+```
+
+	2.	Create a table with a vector column:
+
+```SQL
 CREATE TABLE documents (
   id BIGSERIAL PRIMARY KEY,
   content TEXT,
-  embedding VECTOR(3)
+  embedding VECTOR(1024)
 );
 ```
 
@@ -374,15 +363,21 @@ Here, the `embedding` column is capable of storing vectors with 3 dimensions. De
 > [!TIP]
 > The `mistral-embed` model generates embedding vectors of dimension 1024 for each text string, regardless of its length. So, this will be the value we use when we create the table.
 
-To retrieve vectors and calculate similarity, use `SELECT` statements and the built-in vector operators. For instance, you can find the top 5 most similar items to a given embedding using the following query:
 
-`SELECT * FROM documents ORDER BY embedding <-> '[3,1,2]' LIMIT 5;`
+	3.	Query for similar items:
 
-This query computes the Euclidean distance (L2 distance) between the given vector and the vectors stored in the items table, sorts the results by the calculated distance, and returns the top 5 most similar items.
+```SQL
+SELECT * FROM documents 
+ORDER BY embedding <-> '[3,1,2,...]' 
+LIMIT 5;
+```
+
+This finds the top 5 most similar items using Euclidean distance.
+
+By leveraging vector embeddings and efficient storage/querying mechanisms, we can significantly enhance the accuracy and relevance of LLM responses in various applications.
 
 
 ### RAG architecture
-
 
 At a high-level, this is how the app will work:
 
@@ -396,31 +391,36 @@ At a high-level, this is how the app will work:
 
 <img width="1512" alt="RAG" src="https://github.com/user-attachments/assets/67888ef4-0ea4-4655-ad5d-3a0ba97918e9">
 
-## Exercise #2 - setting up the vector store
+## Exercise #2 - Use Postgres as a vector store
 
 ### Signing up for a Neon account
 
-To set up the vector store, you'll need to sign up for a [Neon account](https://console.neon.tech/signup). Neon is fully managed Postgres database that allows you to store and query vector embeddings in Postgres.
+To create your vector store, you'll need a [Neon account](https://console.neon.tech/signup). Neon provides a fully managed PostgreSQL database service that supports storing and querying vector embeddings.
 
-After you sign up, you are guided through some onboarding steps that ask you to create a Project. After that, you are presented with the project Quickstart where you can grab a connection string to connect to your database.
+Follow these steps to get started:
 
+1. Sign up for a Neon account using the link above.
+2. Complete the onboarding process, which includes creating a new Project.
+3. Once your Project is set up, you'll be directed to the Project Quickstart page.
+4. On this page, you'll find your database connection string. You'll need this to connect to your new database.
 
 <img width="1512" alt="Screenshot 2024-07-11 at 8 16 47 AM" src="https://github.com/m-abdelwahab/build-smarter-chatbots/assets/27310414/59c445e3-81ec-4463-8eac-9981f785c2ad">
 
 
 <img width="1512" alt="Screenshot 2024-07-11 at 8 17 07 AM" src="https://github.com/m-abdelwahab/build-smarter-chatbots/assets/27310414/1c840dde-2702-4135-91aa-86e4ddf847a6">
 
-In Neon, everything starts with the Project
 
-It is the top-level container that holds your branches, databases, and roles. Typically, you should create a project for each repository in your application. This allows you to manage your database branches just like you manage your code branches: a branch for production, staging, development, new features, previews, and so forth.
+➡️ `TODO`: 
 
-We create your default branch main for you
+1. Add the connection string to the `.env.local` file. It should look like this:
 
-main is the default (primary) branch and hosts your database, role, and a compute endpoint that you can connect your application to.
+```bash
+MISTRAL_API_KEY=your-api-key
+DATABASE_URL=your-neon-connection-string
+```
 
-
-To set up the database, you can run the following command:
-
+2. set up the database by running the following command in your terminal:
+ 
 ```bash
 npm run db:setup
 ```
@@ -470,9 +470,9 @@ const main = async () => {
 main().catch(console.error);
 ```
 
-The `main()` function connects to a database, defines a set of text samples, and generates embeddings for these samples using the Mistral AI model. It first installs the pgvector extension if it doesn't exist and then sets up a database table designed to store text content alongside their vector embeddings. Each text sample and its corresponding embedding is then inserted into the database.
+The `main()` function connects to a database, defines a set of text samples, and generates embeddings for these samples using the Mistral AI model. The pgvector extension is then installed if it doesn't exist and then table designed to store text content alongside their vector embeddings is created. Each text sample and its corresponding embedding is then inserted into the database.
 
-## Exercise #3 - adding RAG to the chatbot
+## Exercise #3 -  Implement RAG in your chatbot
 
 In this exercise, you will modify the `src/app/api/chat/route.ts` file to query the database for relevant information.
 
@@ -485,7 +485,7 @@ Here are the steps that you need to take:
 1. Pass the response to the LLM as a system prompt to generate the final response.
 
 
-To get started, you can use the following code snippet as a reference:
+To get started, you can use the following code snippet:
 
 ```ts
 // app/api/chat/route.ts
@@ -518,7 +518,10 @@ export async function POST(req: Request) {
 }
 ```
 
-Here are some resources you can use:
+>[!TIP]
+>You can use the `setup.ts` file as a reference throughout this exercise.
+
+Here are some additional resources you can use:
 - [API reference for the `embed()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/embed)
 - [Neon Serverless Driver documentation](https://neon.tech/docs/serverless/serverless-driver#use-the-driver-over-http)
 - [pgvector documentation on querying vectors](https://github.com/pgvector/pgvector?tab=readme-ov-file#querying)
