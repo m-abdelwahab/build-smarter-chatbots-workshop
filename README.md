@@ -2,79 +2,69 @@
 
 ![build-smarter-chatbots-workshop](https://github.com/user-attachments/assets/5b1a5af5-426d-4470-ac36-1003b594f1c3)
 
-In this workshop, you'll build an AI-powered chatbot that is able to access external data to provide the most accurate answer.
+In this workshop, you'll create an AI-powered chatbot that can access external data to provide accurate answers. This workshop is ideal for developers with basic web development knowledge who want to expand their skills in building modern, AI-enhanced applications.
 
-This workshop is perfect for developers who have a basic understanding of web development and want to expand their skills in building modern, AI-powered applications.
+## Workshop Structure
 
-## Workshop activities
-
-The workshop includes a mix of two activities:
-- **Conceptual overviews** — these are explanations of key concepts that you need to understand to complete the exercises.
-- **Exercises** – these are hands-on activities that guide you to achieve a specific goal. You will have a chance to implement the concepts you learned in the conceptual overviews and you will have code snippets to help you along the way.
+The workshop combines two types of activities:
+- **Concept overviews**: Explanations of key ideas you'll need to understand.
+- **Hands-on exercises**: Guided activities where you'll apply what you've learned, with helpful code snippets provided.
 
 ## Workshop outline
 
-The workshop is divided into the following sections:
-- Exercise #0 - Setting up the project & development environment
-- Conceptual Overview - what are LLMs?
-- Exercise #1 - Adding AI capabilities to the chatbot
-- Conceptual Overview - what is Retreival-Augmented Generation (RAG)?
-- Exercise #2 - using Postgres as a vector store
-- Exercise #3 - adding RAG to the chatbot
+1. Exercise #0: Set up your project and development environment
+2. Concept Overview: Understanding Large Language Models (LLMs)
+3. Exercise #1: Add AI capabilities to your chatbot
+4. Concept Overview: Exploring Retrieval-Augmented Generation (RAG)
+5. Exercise #2: Use Postgres as a vector store
+6. Exercise #3: Implement RAG in your chatbot
 
 ## Prerequisites
 
-To complete this workshop, you'll need to have basic working knowledge of:
+To get the most out of this workshop, you should have:
 
-- Building APIs and writing server-side code using JavaScript/TypeScript
-- Working with the command-line and installing Node.js packages
-- SQL
+- Basic knowledge of building APIs and server-side code with JavaScript/TypeScript
+- Familiarity with command-line tools and installing Node.js packages
+- Some understanding of SQL
 
-The app you'll build today has both a front-end and back-end components. This workshop focuses on building the backend, and won't dive deep into the front-end.
+This workshop focuses primarily on the backend and won't dive into the front-end part of the app you'll be building today.
 
-## Exercise #0 - Setting up the project & development environment
+## Exercise #0: Setting Up Your Environment
 
-In this exercise, you'll set up your development environment. You can either use your local machine or instead use Stackblitz, an online development environment.
+Choose between using your local machine or Stackblitz, an online development environment.
 
 [![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/m-abdelwahab/build-smarter-chatbots)
 
-Using Stackblitz will automatically install the project's dependencies for you and start the development server by running `npm install && npx next dev` for you.
+Stackblitz will automatically set everything up for you. It will automatically install the project's dependencies for you and start the development server by running `npm install && npx next dev` for you.
 
 <details>
-  <summary>Setting up the project on your local machine</summary>
+  <summary>Local setup instructions</summary>
 
-Before getting started, you will need to have the following installed on your machine:
+  You'll need:
+  - [Git](https://git-scm.com/)
+  - [Node.js](https://nodejs.org/) (version 18+). You can check the Node version installed on your machine by running `node -v` in your terminal.
 
-- [Git](https://git-scm.com/) (to be able to follow along and complete the exercises)
-- [Node.js](https://nodejs.org/) - installation instructions (at least version 18 is required. You can check the Node version installed on your machine by running `node -v`)
+  Steps:
+  1. Clone the repo:
+     ```bash
+     git clone https://github.com/neondatabase/build-smarter-chatbots-workshop
+     ```
+  2. Set up the project:
+     ```bash
+     cd build-smarter-chatbots-workshop
+     npm i
+     npm run dev
+     ```
 
-To get started, run the following commands:
-
-1. In the directory of your choice, clone the starter repo
-
-```bash
-git clone https://github.com/neondatabase/build-smarter-chatbots-workshop
-```
-
-1. Navigate to the cloned repo, install the project's dependencies and start the development server
-
-```bash
-cd build-smarter-chatbots-workshop
-
-npm i
-
-npm run dev
-```
-
-This will start a local development server at [http://localhost:3000](http://localhost:3000/)
-
+  This starts a local server at [http://localhost:3000](http://localhost:3000/)
 </details>
+
 
 As it stands, this chatbot is non-functional (yet)
 
 ### Project overview
 
-You'll find the following directory structure:
+Here's the basic structure of your project:
 
 ```
 build-better-chatbots/
@@ -102,9 +92,6 @@ build-better-chatbots/
 
 ```
 
-The `.env.local.example` and `setup.ts` files will be used later.
-
-
 Next.js uses a file-system based router where folders located under the `app` directory are used to define routes. Each folder represents a route segment that maps to a URL segment. To create a nested route, you can nest folders inside each other.
 
 ![Next.js file-system based router](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Froute-segments-to-path-segments.png&w=3840&q=75)
@@ -115,8 +102,8 @@ When you add a special `route.ts` file inside a folder, it will make the full pa
 
 
 <details>
-  <summary>Frontend code overview</summary>
-  If you open the `src/app/page.tsx` file, you'll see the following code:
+  <summary>Frontend code explanation</summary>
+    The `src/app/page.tsx` file contains the following code:
 
   ```tsx
   "use client";
@@ -147,11 +134,11 @@ When you add a special `route.ts` file inside a folder, it will make the full pa
   }
   ```
 
-  The `"use client"` directive placed at the top of the file means the page will be rendered on the client.
+  This uses the Vercel AI SDK, a library that provides a set of tools that allows developers to integrate artificial intelligence (AI) capabilities into their applications. It also provides pre-built functions and APIs for popular AI services, which you'll use later.
 
-  The`useChat` hook is then imported from the Vercel AI SDK, a library that provides a set of tools that allows developers to integrate artificial intelligence (AI) capabilities into their applications. It also provides pre-built functions and APIs for popular AI services, which you'll use later.
-
-  This hook returns multiple values which are used to build the UI:
+  - The `"use client"` directive placed at the top of the file means the page will be rendered on the client.
+  
+  The `useChat` hook is used to manage chat state and interactions. It returns multiple values which are used to build the UI:
   - `messages` - the current chat messages (an array of objects with id, role, and content properties).
   - `input` - the current value of the user's input field.
   - `handleInputChange` and `handleSubmit` - functions to handle user interactions (typing into the input field and submitting the form, respectively).
@@ -161,26 +148,19 @@ When you add a special `route.ts` file inside a folder, it will make the full pa
 
 ## Conceptual Overview - what are LLMs?
 
-Large Language Models (LLMs) are a type of artificial intelligence (AI) model that can generate human-like text. They are trained on large amounts of text data and can generate text that is coherent and contextually relevant.
+LLMs are AI models trained on vast amounts of text data to generate human-like text. They're used in chatbots, translation, content creation, and more.
 
 <img width="1512" alt="What are LLMs?" src="https://github.com/user-attachments/assets/9670312b-e83e-4a1f-abab-3f7f04433480">
 
-LLMs are used in a wide range of applications:
--  Chatbots 
--  Language translation
--  Content generation
--  Code geenration
--  And more...
+We'll use the [Mistral 7B model](https://docs.mistral.ai/getting-started/models/#overview) via Mistral's API for this workshop.
 
-
-For this workshop you'll use the [Mistral 7B model](https://docs.mistral.ai/getting-started/models/#overview)	. Mistral provides access to this model through their API, allowing developers to integrate AI capabilities into various applications.
 
 ## Exercise #1 - Adding AI capabilities to the chatbot
 
-The goal of this exercise is to make the chatbot work. Right now, if you try the app will not work because we have an API endpoint that is not implemented.
+Let's make the chatbot functional by implementing the API endpoint.
 
 
-If you open the `app/api/chat/route.ts` file, you'll find the following code:
+Current `app/api/chat/route.ts`:
 
 ```ts
 // app/api/chat/route.ts
@@ -268,7 +248,7 @@ Here are some resources you can use:
 >[!TIP]
 >The `streamText()` function accepts a `messages` parameter that should contain an  array of messages sent by the user. 
 
-You can test that the chatbot is working by starting the development server (`npm run dev`) and submitting a message. You should see a response from the chatbot.
+You can test that the chatbot is working by starting the development server (`npm run dev`) and submitting a message. You should see a response from the chatbot if everything was set up correctly.
 
 <details>
   <summary>Solution</summary>
@@ -400,12 +380,6 @@ To retrieve vectors and calculate similarity, use `SELECT` statements and the 
 
 This query computes the Euclidean distance (L2 distance) between the given vector and the vectors stored in the items table, sorts the results by the calculated distance, and returns the top 5 most similar items.
 
-Supported distance functions include:
-
-- `<->` - L2 distance
-- `<#>` - (negative) inner product
-- `<=>` - cosine distance
-- `<+>` - L1 distance
 
 ### RAG architecture
 
@@ -605,15 +579,17 @@ export async function POST(req: Request) {
   ```
 </details>
 
+You can find the complete solution in the `final` branch of the repository.
+
 
 ## Conclusion
 
-In this workshop, you learned how to build an AI-powered chatbot that can access external data to provide the most accurate answer. You used the Vercel AI SDK to integrate an AI model into your app and the Neon Serverless Driver to store and query vector embeddings in a Postgres database hosted on Neon.
+You've built an AI chatbot that uses external data for more accurate responses.
 
-You can now take this project further by:
--  Adding more features to the chatbot, such as handling more complex user queries 
--  Integrating other AI models, and improving the user experience.
--  Work with different data formats (e.g images, video, audio, PDFs etc.). For that you can use a framework like [Langchain](https://www.langchain.com/langchain) that allows you to embed any type of data into a vector.
--  Using the architecture to build other AI-powered applications that require access to external data.
+You can extend this by:
+  •	Handling more complex queries
+  •	Integrating different AI models
+  •	Working with various data types (images, audio, etc.) and potentially introducing a  framework like [Langchain](https://www.langchain.com/langchain) that allows you to embed any type of data into a vector
+  •	Building other AI-powered apps needing external data
 
 Happy coding! 🚀
