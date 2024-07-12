@@ -604,3 +604,16 @@ export async function POST(req: Request) {
   }
   ```
 </details>
+
+
+## Conclusion
+
+In this workshop, you learned how to build an AI-powered chatbot that can access external data to provide the most accurate answer. You used the Vercel AI SDK to integrate an AI model into your app and the Neon Serverless Driver to store and query vector embeddings in a Postgres database hosted on Neon.
+
+You can now take this project further by:
+-  Adding more features to the chatbot, such as handling more complex user queries 
+-  Integrating other AI models, and improving the user experience.
+-  Work with different data formats (e.g images, video, audio, PDFs etc.). For that you can use a framework like [Langchain](https://www.langchain.com/langchain) that allows you to embed any type of data into a vector.
+-  Using the architecture to build other AI-powered applications that require access to external data.
+
+Happy coding! 🚀
