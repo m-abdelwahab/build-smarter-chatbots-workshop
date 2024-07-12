@@ -250,7 +250,7 @@ Here are some resources you can use:
 You can test that the chatbot is working by starting the development server (`npm run dev`) and submitting a message. You should see a response from the chatbot if everything was set up correctly.
 
 <details>
-  <summary>Solution</summary>
+  <summary>Solution you can also run `git checkout exercise-1-solution` if you're working locally </summary>
   Here's the solution to the exercise:
 
   ```ts
@@ -487,7 +487,7 @@ Here are the steps that you need to take:
 1. Pass the response to the LLM as a system prompt to generate the final response.
 
 
-To get started, you can use the following code snippet:
+Open the file `app/api/chat/route.ts` in your project and replace the existing code with the following code snippet:
 
 ```ts
 // app/api/chat/route.ts
@@ -520,6 +520,12 @@ export async function POST(req: Request) {
 }
 ```
 
+If you prefer, you can switch to the exercise-3 branch, which already includes this code snippet. To do so:
+	1.	Open your terminal.
+	2.	Run the command: git checkout exercise-3
+
+This branch contains the pre-configured code, allowing you to start working on the chat functionality immediately.
+
 >[!TIP]
 >You can use the `setup.ts` file as a reference throughout this exercise.
 
@@ -541,7 +547,7 @@ Here are some example prompts you can use to test the chatbot:
 
 
 <details>
-  <summary>Solution</summary>
+  <summary>Solution - you can also run `git checkout exercise-3-solution` if you're working locally</summary>
 
   Here's the solution to the exercise:
 
