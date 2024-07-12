@@ -1,6 +1,6 @@
 # Build Smarter Chatbots
 
-<!-- Cover image -->
+![build-smarter-chatbots-workshop](https://github.com/user-attachments/assets/5b1a5af5-426d-4470-ac36-1003b594f1c3)
 
 In this workshop, you'll build an AI-powered chatbot that is able to access external data to provide the most accurate answer.
 
@@ -9,8 +9,8 @@ This workshop is perfect for developers who have a basic understanding of web de
 ## Workshop activities
 
 The workshop includes a mix of two activities:
-- Conceptual overviews: these are explanations of key concepts that you need to understand to complete the exercises.
-- Exercises: these are hands-on activities that guide you to achieve a specific goal. You will have a chance to implement the concepts you learned in the conceptual overviews and you will have code snippets to help you along the way.
+- **Conceptual overviews** — these are explanations of key concepts that you need to understand to complete the exercises.
+- **Exercises** – these are hands-on activities that guide you to achieve a specific goal. You will have a chance to implement the concepts you learned in the conceptual overviews and you will have code snippets to help you along the way.
 
 ## Workshop outline
 
@@ -163,6 +163,8 @@ When you add a special `route.ts` file inside a folder, it will make the full pa
 
 Large Language Models (LLMs) are a type of artificial intelligence (AI) model that can generate human-like text. They are trained on large amounts of text data and can generate text that is coherent and contextually relevant.
 
+<img width="1512" alt="What are LLMs?" src="https://github.com/user-attachments/assets/9670312b-e83e-4a1f-abab-3f7f04433480">
+
 LLMs are used in a wide range of applications:
 -  Chatbots 
 -  Language translation
@@ -176,7 +178,6 @@ For this workshop you'll use the [Mistral 7B model](https://docs.mistral.ai/gett
 ## Exercise #1 - Adding AI capabilities to the chatbot
 
 The goal of this exercise is to make the chatbot work. Right now, if you try the app will not work because we have an API endpoint that is not implemented.
-
 
 
 If you open the `app/api/chat/route.ts` file, you'll find the following code:
@@ -237,7 +238,7 @@ MISTRAL_API_KEY=your-api-key
 DATABASE_URL=
 ```
 
->[!INFO]
+>[!NOTE]
 > The `.env` file included by Stackblitz will work as well but `.env.local` is the recommended approach when using environment variables locally with Next.js.
 
 
@@ -305,7 +306,12 @@ User: What's my favorite food?
 AI: I don't know your favorite food yet. Could you tell me what it is?
 ```
 
-Fortunately, we can provide the LLM with extra information to generate the correct response. But first, there's an important question: assuming we already have data that we know is factually correct, how do we:
+Fortunately, we can provide the LLM with extra information to generate the correct response.
+
+<img width="1512" alt="Screenshot 2024-07-12 at 9 11 22 AM" src="https://github.com/user-attachments/assets/38ae2ad6-032b-49d0-a7ef-023163363bf3">
+
+
+But first, there's an important question: assuming we already have data that we know is factually correct, how do we:
 
 - Understand what the user means by their prompt
 - Know which exact information to give the LLM, given that we have unlimited prompts
@@ -316,9 +322,10 @@ This is where vector embeddings come in.
 
 A vector embedding is a vector(list) of floating point numbers. It can represent unstructured data (e.g., text, images, audio, or other types of information).
 
-
-
 What's powerful about embeddings is that they can capture the meaning behind the text and can be used to measure the relatedness of text strings.
+
+![image](https://github.com/user-attachments/assets/b58a9679-8f37-41ed-adce-feeab302605d)
+*source: https://qdrant.tech/articles/what-are-embeddings/*
 
 The smaller the distance between two vectors, the more they're related to each other and vice-versa.
 
@@ -402,17 +409,18 @@ Supported distance functions include:
 
 ### RAG architecture
 
-![RAG](https://miro.medium.com/v2/resize:fit:1400/format:webp/1*YLrQl5CM7NjQPcfTCrf-sQ.png)
 
-To provide the chatbot with extra information, this is what you need to do:
+At a high-level, this is how the app will work:
 
-1. Convert the existing data set that we know is factually correct to vector embeddings and store it in a vector database
-2. When a user gives us a prompt, we need to convert it into a vector embedding
-3. Find the vector embedding in our data set that is closest to the prompt's vector embedding representation
-4. Return the actual data associated with our data set embedding
-5. Pass this data to the LLM
+1. The user sends a message.
+2. We convert the message into a vector embedding using an AI model.
+3. We query the database for the most similar text content based on the user's message embedding.
+4. We return the most similar text content as the response to the user's message.
+5. We pass the response to the LLM as a system prompt to generate the final response.
+6. The LLM generates the final response based on the user's message and the most similar text content.
+7. We returns the final response to the user.
 
-This is where the Retrieval-Augmented Generation (RAG) architecture comes in. It combines the power of LLMs with vector embeddings to provide the most accurate answer to the user's prompt.
+<img width="1512" alt="RAG" src="https://github.com/user-attachments/assets/67888ef4-0ea4-4655-ad5d-3a0ba97918e9">
 
 ## Exercise #2 - setting up the vector store
 
