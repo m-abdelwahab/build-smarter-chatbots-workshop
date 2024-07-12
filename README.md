@@ -6,8 +6,6 @@ In this workshop, you'll build an AI-powered chatbot that is able to access exte
 
 This workshop is perfect for developers who have a basic understanding of web development and want to expand their skills in building modern, AI-powered applications.
 
-<!-- Video of the chatbot app -->
-
 ## Workshop activities
 
 The workshop includes a mix of two activities:
@@ -111,11 +109,9 @@ Next.js uses a file-system based router where folders located under the `app` di
 
 ![Next.js file-system based router](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Froute-segments-to-path-segments.png&w=3840&q=75)
 
-The app has a single route defined in the `src/app/page.tsx` file. This route will be rendered at the index route `/`.
+The app has a single route defined in the `src/app/page.tsx` file. This route will be rendered at the index route `/`. This is the page that will be displayed when you visit the app in the browser and where you'll see the chatbot UI.
 
-Adding a special `route.ts` file inside a folder will make route segments publicly accessible as API endpoints.
-
-In this project, we have a `app/api/chat` folder that represents the `/api/chat` route. Inside this folder, you'll find a `route.ts` file that will be used to handle the chatbot's requests. You're going to implement the logic to handle the chatbot's requests in this file.
+When you add a special `route.ts` file inside a folder, it will make the full path of the folder a route. For example, in this project you have a `app/api/chat` with a `route.ts` file nested under it. This will create a route at `/api/chat` which will be used to handle the chatbot's requests. You're going to implement the logic to handle the chatbot's requests in this file.
 
 
 <details>
@@ -563,6 +559,40 @@ Here are some example prompts you can use to test the chatbot:
   Here's the solution to the exercise:
 
   ```ts
+// app/api/chat/route.ts
+import { mistral } from "@ai-sdk/mistral";
+import { streamText, embed } from "ai";
+import { neon } from "@neondatabase/serverless";
 
+export async function POST(req: Request) {
+    const { messages } = await req.json();
+
+    // Get the user's last message
+    const prompt = messages[messages.length - 1].content;
+
+    // Embed the user's last message
+    const { embedding } = await embed({
+      model: mistral.embedding("mistral-embed"),
+      value: prompt,
+    });
+
+    const sql = neon(process.env.DATABASE_URL!);
+
+    // find the most similar document to the user's last message
+    const documents = await sql`
+      SELECT * FROM documents
+      ORDER BY embedding <->  ${JSON.stringify(embedding)}::vector
+      LIMIT 1
+    `;
+
+    // Stream the user's messages and the most similar document to the model and include the document in the system message
+    const result = await streamText({
+      model: mistral("open-mistral-7b"),
+      messages,
+      system: `You have access to relevant information that might help answer the user's question. Here it is: "${documents.map((d) => d.content).join(" ")}". Use this information if it's relevant to the user's query, but don't mention it explicitly unless asked. If the information isn't relevant, rely on your general knowledge to answer.`,
+    });
+
+    return result.toAIStreamResponse();
+  }
   ```
 </details>
