@@ -77,7 +77,7 @@ build-better-chatbots/
 ┃   ┣ globals.css
 ┃   ┣ layout.tsx
 ┃   ┗ page.tsx
-┣ .env.local.example
+┣ .env.example
 ┣ .gitignore
 ┣ README.md
 ┣ next-env.d.ts
@@ -210,16 +210,13 @@ The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To gen
    1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
    2.  Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
    3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
-3. Copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this: 
+3. Copy the `.env.example` file to a new file called `.env` and add your API key there. It should look like this: 
 
 ```bash
 MISTRAL_API_KEY=your-api-key
 # Will be added later, you can leave it empty for now
 DATABASE_URL=
 ```
-
->[!NOTE]
-> The `.env` file included by Stackblitz will work as well but `.env.local` is the recommended approach when using environment variables locally with Next.js.
 
 
 Once you install the provider package and have set up an API key, you can then use functions from the Vercel AI SDK core package (it has been added to your project already and was installed by running `npm install ai`). 
@@ -415,7 +412,7 @@ Follow these steps to get started:
 
 ➡️ `TODO`: 
 
-1. Add the connection string to the `.env.local` file. It should look like this:
+1. Add the connection string to the `.env` file. It should look like this:
 
 ```bash
 MISTRAL_API_KEY=your-api-key
