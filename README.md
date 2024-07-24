@@ -1,86 +1,72 @@
 # Build Smarter Chatbots
 
-<!-- Cover image -->
+![build-smarter-chatbots-workshop](https://github.com/user-attachments/assets/5b1a5af5-426d-4470-ac36-1003b594f1c3)
 
-In this workshop, you'll build an AI-powered chatbot that is able to access external data to provide the most accurate answer.
+In this workshop, you'll create an AI-powered chatbot that can access external data to provide accurate answers. This workshop is ideal for developers with basic web development knowledge who want to expand their skills in building modern, AI-enhanced applications.
 
-This workshop is perfect for developers who have a basic understanding of web development and want to expand their skills in building modern, AI-powered applications.
+## Workshop Structure
 
-<!-- Video of the chatbot app -->
+The workshop combines two types of activities:
+- **Concept overviews**: Explanations of key ideas you'll need to understand.
+- **Hands-on exercises**: Guided activities where you'll apply what you've learned, with helpful code snippets provided.
+
+## Workshop outline
+
+1. Exercise #0: Set up your project and development environment
+2. Concept Overview: What are Large Language Models (LLMs)
+3. Exercise #1: Add AI capabilities to your chatbot
+4. Concept Overview: Exploring Retrieval-Augmented Generation (RAG)
+5. Exercise #2: Use Postgres as a vector store
+6. Exercise #3: Implement RAG in your chatbot
 
 ## Prerequisites
 
-To complete this workshop, you'll need to have basic working knowledge of:
+To get the most out of this workshop, you should have:
 
-- Building APIs and writing server-side code using JavaScript/TypeScript
-- Working with the command-line and installing Node.js packages
-- SQL
+- Basic knowledge of building APIs and server-side code with JavaScript/TypeScript
+- Familiarity with command-line tools and installing Node.js packages
+- Some understanding of SQL
 
-The app you'll build today has both a front-end and back-end components. This workshop focuses on building the backend, it won't dive deep into the front-end.
+This workshop focuses primarily on the backend and won't dive into the front-end part of the app you'll be building today.
 
+## Exercise #0: Set up your project and development environment
 
-## Workshop Structure & outline
+Choose between using your local machine or Stackblitz, an online development environment.
 
-The workshop includes a mix of two activities:
-- Conceptual overviews: these are short explanations of key concepts that you need to understand to complete the exercises.
-- Exercises: these are hands-on activities that guide you to achieve a specific goal.
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/~/github.com/m-abdelwahab/build-smarter-chatbots)
 
-The workshop is divided into the following sections:
-- Exercise #0 - Setting up the project & development environment
-- Conceptual Overview - what are LLMs?
-- Exercise #1 - Adding AI capabilities to the chatbot
-- Conceptual Overview - what is RAG?
-- Exercise #2 - setting up the vector store
-- Exercise #3 - adding RAG to the chatbot
+Stackblitz will automatically set everything up for you. It will automatically install the project's dependencies for you and start the development server by running `npm install && npx next dev` for you.
 
-You can find the final state of the project under a git branch called `final`. You can check out this branch to see the final state of the project.
-
-## Exercise #0 - Setting up the project & development environment
-
-In this exercise, you'll set up your development environment. You can either use your local machine or instead use Stackblitz, an online development environment.
-
-<!-- Stackblitz button -->
-
-Using Stackblitz will automatically install the project's dependencies for you and start the development server by running `npm run dev` for you.
+<img width="1512" alt="Screenshot 2024-07-12 at 4 11 26 AM" src="https://github.com/user-attachments/assets/c6bfae94-53b7-4a89-958f-f9c3401e25d6">
 
 <details>
-  <summary>Setting up the project on your local machine</summary>
+  <summary>Local setup instructions</summary>
 
-Before getting started, you will need to have the following installed on your machine:
+  You'll need:
+  - [Git](https://git-scm.com/)
+  - [Node.js](https://nodejs.org/) (version 18+). You can check the Node version installed on your machine by running `node -v` in your terminal.
 
-- [Git](https://git-scm.com/) (to be able to follow along and complete the exercises)
-- [Node.js](https://nodejs.org/) - installation instructions (at least version 18 is required. You can check the Node version installed on your machine by running `node -v`)
+  Steps:
+  1. Clone the repo:
+     ```bash
+     git clone https://github.com/neondatabase/build-smarter-chatbots-workshop
+     ```
+  2. Set up the project:
+     ```bash
+     cd build-smarter-chatbots-workshop
+     npm i
+     npm run dev
+     ```
 
-To get started, run the following commands:
-
-1. In the directory of your choice, clone the starter repo
-
-```bash
-git clone https://github.com/neondatabase/build-smarter-chatbots-workshop
-```
-
-1. Navigate to the cloned repo, install the project's dependencies and start the development server
-
-```bash
-cd build-smarter-chatbots-workshop
-
-npm i
-
-npm run dev
-```
-
-This will start a local development server at [http://localhost:3000](http://localhost:3000/)
-
+  This starts a local server at [http://localhost:3000](http://localhost:3000/)
 </details>
 
 ### Project overview
 
-As it stands, this chatbot is non-functional because we haven't set up an API endpoint (yet)
-
-You'll find the following directory structure:
+Here's the basic structure of your project:
 
 ```
-we-are-developers-2024-workshop/
+build-better-chatbots/
 ┣ public/
 ┣ src/
 ┃ ┗ app/
@@ -91,7 +77,7 @@ we-are-developers-2024-workshop/
 ┃   ┣ globals.css
 ┃   ┣ layout.tsx
 ┃   ┗ page.tsx
-┣ .env.local.example
+┣ .env.example
 ┣ .gitignore
 ┣ README.md
 ┣ next-env.d.ts
@@ -105,16 +91,19 @@ we-are-developers-2024-workshop/
 
 ```
 
-The `.env.local.example` and `setup.ts` files will be used later.
+Next.js uses a file-system based router where folders located under the `app` directory are used to define routes. Each folder represents a route segment that maps to a URL segment. To create a nested route, you can nest folders inside each other.
 
-The app has a single route defined in the `src/app/page.tsx` file. This route will be rendered at the index route `/`.
+![Next.js file-system based router](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Froute-segments-to-path-segments.png&w=3840&q=75)
 
-There is also an API route defined in the `src/app/api/chat/route.ts` file. This route will be used to handle the chatbot's requests. This is where you'll spend most of your time during this workshop.
+The app has a single route defined in the `src/app/page.tsx` file. This route will be rendered at the index route `/`. This is the page that will be displayed when you visit the app in the browser and where you'll see the chatbot UI.
 
+When you add a special `route.ts` file inside a folder, it will make the full path of the folder an API endpoint. For example, in this project you have a `app/api/chat` with a `route.ts` file nested under it. This will create a route at `/api/chat` endpoint which will handle the chatbot's requests. 
+
+You're going to implement the logic to handle the chatbot's requests in this file.
 
 <details>
-  <summary>Frontend code overview</summary>
-  If you open the `src/app/page.tsx` file, you'll see the following code:
+  <summary>Frontend code explanation</summary>
+    The `src/app/page.tsx` file contains the following code:
 
   ```tsx
   "use client";
@@ -145,11 +134,11 @@ There is also an API route defined in the `src/app/api/chat/route.ts` file. This
   }
   ```
 
-  The `"use client"` directive placed at the top of the file means the page will be rendered on the client.
+  This uses the Vercel AI SDK, a library that provides a set of tools that allows developers to integrate artificial intelligence (AI) capabilities into their applications. It also provides pre-built functions and APIs for popular AI services, which you'll use later.
 
-  The`useChat` hook is then imported from the Vercel AI SDK, a library that provides a set of tools that allows developers to integrate artificial intelligence (AI) capabilities into their applications. It also provides pre-built functions and APIs for popular AI services, which you'll use later.
-
-  This hook returns multiple values which are used to build the UI:
+  - The `"use client"` directive placed at the top of the file means the page will be rendered on the client.
+  
+  The `useChat` hook is used to manage chat state and interactions. It returns multiple values which are used to build the UI:
   - `messages` - the current chat messages (an array of objects with id, role, and content properties).
   - `input` - the current value of the user's input field.
   - `handleInputChange` and `handleSubmit` - functions to handle user interactions (typing into the input field and submitting the form, respectively).
@@ -157,33 +146,21 @@ There is also an API route defined in the `src/app/api/chat/route.ts` file. This
 </details>
 
 
-## Conceptual Overview - what are LLMs?
+## Conceptual Overview - What are Large Language Models (LLMs)?
 
-Large Language Models (LLMs) are a type of artificial intelligence (AI) model that can generate human-like text. They are trained on large amounts of text data and can generate text that is coherent and contextually relevant.
+LLMs are AI models trained on vast amounts of text data to generate human-like text. They're used in chatbots, translation, content creation, and more.
 
-LLMs are used in a wide range of applications:
--  Chatbots 
--  Language translation
--  Content generation
--  Code geenration
--  And more...
+<img width="1512" alt="What are LLMs?" src="https://github.com/user-attachments/assets/9670312b-e83e-4a1f-abab-3f7f04433480">
+
+We'll use the [Mistral 7B model](https://docs.mistral.ai/getting-started/models/#overview) via Mistral's API for this workshop.
 
 
-For this workshop you'll use <> by [Mistral](https://mistral.ai). Mistral provides access to this model through their API, allowing developers to integrate AI capabilities into various applications.
+## Exercise #1 - Add AI capabilities to your chatbot
 
-## Exercise #1 - Adding AI capabilities to the chatbot
+Let's make the chatbot functional by implementing the API endpoint.
 
-The goal of this exercise is to make the chatbot work. Right now, if you try the app it will not work because we have an API endpoint that is not implemented.
 
-Next.js uses a file-system based router where folders located under the `app` directory are used to define routes. Each folder represents a route segment that maps to a URL segment. To create a nested route, you can nest folders inside each other.
-
-![Next.js file-system based router](https://nextjs.org/_next/image?url=%2Fdocs%2Fdark%2Froute-segments-to-path-segments.png&w=3840&q=75)
-
-Adding a special `route.ts` file inside a folder will make route segments publicly accessible as API endpoints.
-
-In this project, we have a `app/api/chat` folder that represents the `/api/chat` route. Inside this folder, you'll find a `route.ts` file that will be used to handle the chatbot's requests. You're going to implement the logic to handle the chatbot's requests in this file.
-
-If you open this file, you'll find the following code:
+Current `app/api/chat/route.ts`:
 
 ```ts
 // app/api/chat/route.ts
@@ -195,14 +172,17 @@ export async function POST(req: Request) {
 
 ```
 
-The code defines an asynchronous function named `POST` that will handle POST requests to this route. The function takes a single parameter `req` of type `Request`, which represents the incoming HTTP request.
+The code defines an asynchronous function named `POST` that handle POST requests made to this route. The function takes a single parameter `req` of type `Request`, which represents the incoming HTTP request.
 
-We then use destructuring to extract a messages property from the JSON body of the request. This property will contain an array of messages sent by the user. Finally, we return a new Response object with a message indicating that the chat messages have been received.
+We then use destructuring to extract a `messages` property from the JSON body of the request. This property will contain an array of messages sent by the user. Finally, we return a new Response object with a message indicating that the chat messages have been received.
 
-We want to pass the messages to an AI model and return the generated text as response. To do that, we'll use the Vercel AI SDK, which simplifies working with LLMs by offering a standardized way of integrating them into your app. You get a unified interface that allows you to switch between AI model providers (e.g, OpenAI, Mistral, Google, etc.) with ease while using the same API for all providers.
+We want to pass the messages array to an AI model and return the generated text as response.
+
+To do that, we'll use Mistral's API along with the Vercel AI SDK, which simplifies working with LLMs by offering a standardized way of integrating them into your app. You get a unified interface that allows you to switch between AI model providers (e.g, OpenAI, Mistral, Google, etc.) with ease while using the same API for all providers. 
 
 ![Vercel AI SDK](https://sdk.vercel.ai/images/ai-sdk-diagram.png)
 
+Here's a quick overview of the Vercel AI SDK:
 
 Each AI company provider (such as OpenAI, Mistral, etc.) has its own dedicated npm package that lists the available models. For example, here's how you can install the [Mistral AI provider package](https://sdk.vercel.ai/providers/ai-sdk-providers/mistral):
 
@@ -222,7 +202,15 @@ You can then specify which model you want to use by passing the model ID to the 
 const model = mistral('mistral-large-latest');
 ```
 
-The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To add it, you can copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this:
+The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To generate an API key, you must do the following:
+
+➡️ `TODO:` 
+1. Install the Mistral AI provider package
+2. Generate an API key from the Mistral console.
+   1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
+   2.  Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
+   3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
+3. Copy the `.env.example` file to a new file called `.env` and add your API key there. It should look like this: 
 
 ```bash
 MISTRAL_API_KEY=your-api-key
@@ -230,12 +218,10 @@ MISTRAL_API_KEY=your-api-key
 DATABASE_URL=
 ```
 
-To get generate an API key:
-1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
-2. Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
-3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
 
-Once you install the provider package and have set up an API key, you can then use functions from the Vercel AI SDK core package (it has been added to your project already and was installed by running `npm install ai`). For example, here's how uou can use the `streamText()` function for interactive use cases such as chat bots and other real-time applications:
+Once you install the provider package and have set up an API key, you can then use functions from the Vercel AI SDK core package (it has been added to your project already and was installed by running `npm install ai`). 
+
+For example, here's how you can use the `streamText()` function for interactive use cases such as chat bots and other real-time applications:
 
 ```ts
 import { openai } from '@ai-sdk/openai';
@@ -250,19 +236,19 @@ const result = await streamText({
 return result.toAIStreamResponse();
 ```
 
-`TODO:` Update the `app/api/chat/route.ts` file to use the Vercel AI SDK to generate text using the Mistral AI model. The generated text should be returned as the response to the user's messages.
+➡️ `TODO:` Update the `app/api/chat/route.ts` file to use the Vercel AI SDK to generate text using the Mistral AI model. The generated text should be returned as the response to the user's messages.
 
 Here are some resources you can use:
 - [API reference for the `streamText()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/stream-text)
 - [Mistral AI provider documentation](https://sdk.vercel.ai/providers/ai-sdk-providers/mistral)
 
 >[!TIP]
->Hint: The `streamText()` function accepts a `messages` parameter that should contain an array of messages sent by the user. 
+>The `streamText()` function accepts a `messages` parameter that should contain an  array of messages sent by the user. 
 
-You can test that the chatbot is working by starting the development server (`npm run dev`) and submitting a message. You should see a response from the chatbot.
+You can test that the chatbot is working by starting the development server (`npm run dev`) and submitting a message. You should see a response from the chatbot if everything was set up correctly.
 
 <details>
-  <summary>Solution</summary>
+  <summary>Solution you can also run `git checkout exercise-1-solution` if you're working locally </summary>
   Here's the solution to the exercise:
 
   ```ts
@@ -272,6 +258,7 @@ You can test that the chatbot is working by starting the development server (`np
 
   export async function POST(req: Request) {
     const { messages } = await req.json();
+
     const result = await streamText({
       model: mistral("open-mistral-7b"),
       messages,
@@ -283,10 +270,9 @@ You can test that the chatbot is working by starting the development server (`np
 </details>
 
 
-
 ## Conceptual Overview - what is RAG?
 
-LLMs will *always* give you an answer, but not necessarily the one you need or the correct one (this is what is known as a hallucination). 
+Large Language Models (LLMs) always provide an answer, but it may not always be the correct or needed one.
 
 Here's an example prompt:
 
@@ -296,51 +282,49 @@ User: What's my favorite food?
 AI: I don't know your favorite food yet. Could you tell me what it is?
 ```
 
-Fortunately, we can provide the LLM with extra information to generate the correct response. Today, you’ll learn how.
+To generate more accurate responses, we can supply the LLM with additional context. 
 
-But first, there's an important question: assuming we already have data that we know is factually correct, how do we:
+However, this raises an important question: Given a set of factually correct data, how do we:
 
-- Understand what the user means by their prompt
-- Know which exact information to give the LLM, given that we have unlimited prompts
+1. Interpret the user's intent from their prompt
+2. Determine which specific information to provide the LLM
 
-This is where vector embeddings come in.
+<img width="1512" alt="Screenshot 2024-07-12 at 9 11 22 AM" src="https://github.com/user-attachments/assets/38ae2ad6-032b-49d0-a7ef-023163363bf3">
+
+
+This is where vector embeddings come into play.
 
 ### Vector Embeddings
 
-A vector embedding is a vector(list) of floating point numbers. It can represent unstructured data (e.g., text, images, audio, or other types of information).
+Vector embeddings are lists of floating-point numbers that can represent various types of unstructured data (text, images, audio, etc.). 
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/7cb3de66-c6a5-403e-9e05-8c141aaba749/d55c3a50-c0a8-4b27-9a3b-2953114baa83/Untitled.png)
+Their power lies in their ability to capture the meaning behind the data and measure the relatedness between different text strings.
 
-What's powerful about embeddings is that they can capture the meaning behind the text and can be used to measure the relatedness of text strings.
 
-The smaller the distance between two vectors, the more they're related to each other and vice-versa.
+![image](https://github.com/user-attachments/assets/b58a9679-8f37-41ed-adce-feeab302605d)
+*source: https://qdrant.tech/articles/what-are-embeddings/*
 
-For example, the distance between the vector representing the word `banana` and the one representing the word `apple` will be smaller than the distance between a vector representing the word `banana` and the word `book` 
+The closer two vectors are in this space, the more related they are and vice-versa. 
+
+For instance, the vectors for "banana" and "apple" would be closer together than the vectors for "banana" and "book".
 
 ### Generating vector embeddings
 
-One way to generate vector embeddings is by using an embeddings API. Here’s an example of how you can use Mistral's embeddings API. Here's how it can be done using the Mistral API and the Vercel AI SDK:
+You can create vector embeddings using an embeddings API. Here's an example using Mistral's API with the Vercel AI SDK:
 
-```ts
+```typescript
 import { mistral } from "@ai-sdk/mistral";
-import { embed } from "ai";
+import { embed, embedMany } from "ai";
 
+// Single embedding
 const { embedding } = await embed({
   model: mistral.embedding("mistral-embed"),
   value: "sunny day at the beach",
 });
-```
 
-The Vercel AI SDK also provides an `embedMany` function that can be used to embed many values at once (batch embedding).
-
-```ts
-import { mistral } from "@ai-sdk/mistral";
-import { embedMany } from 'ai';
-
-// 'embeddings' is an array of embedding objects (number[][]).
-// It is sorted in the same order as the input values.
+// Batch embedding. This is useful when you have a large number of values to embed and want to do it in a single request. We'll use this function later in the workshop.
 const { embeddings } = await embedMany({
-  model: openai.embedding('mistral-embed'),
+  model: mistral.embedding('mistral-embed'),
   values: [
     'sunny day at the beach',
     'rainy afternoon in the city',
@@ -349,28 +333,28 @@ const { embeddings } = await embedMany({
 });
 ```
 
-This is useful when you have a large number of values to embed and want to do it in a single request. We'll use this function later in the workshop.
-
 ### Storing and querying vector embeddings in Postgres with pgvector
 
-The process of representing data into embeddings and calculating the similarity between one or more items is known as vector search (or similarity search). It has a wide range of applications:
+Vector search (or similarity search) has numerous applications, including information retrieval, natural language processing, recommendation systems, and anomaly detection.
 
-- Information Retrieval: you can retrieve relevant information based on user queries since you can accurately search based on the meaning of the user query. (This is what YC idea matcher does)
-- Natural Language Processing: since embeddings capture the meaning of the text, you can use them to classify text and run sentiment analysis.
-- Recommendation Systems: You can recommend similar items based on a given set of items. (e.g., movies/products/books, etc.)
-- Anomaly Detection: since you can determine the similarity between items in a given dataset, you can determine items that don’t belong.
+Postgres can store and retrieve vector embeddings, eliminating the need for an external vector store in many AI and LLM applications. This possible through the [pgvector](https://github.com/pgvector/pgvector?tab=readme-ov-file#querying) extension, which provides efficient storage and querying mechanisms for vector data.
 
-Storing and retrieving vector embeddings can be done in Postgres. This is incredibly useful because it eliminates the need to introduce an external vector store when building AI and LLM applications if you're already using Postgres.
 
-To get started, you first enable the extension. You can do so by running `CREATE EXTENSION vector`
+Here's how to get started:
 
-You then need to create a column that stores the vector data
+	1.	Enable the pgvector extension:
 
-```sql
+```SQL
+CREATE EXTENSION vector;
+```
+
+	2.	Create a table with a vector column:
+
+```SQL
 CREATE TABLE documents (
   id BIGSERIAL PRIMARY KEY,
   content TEXT,
-  embedding VECTOR(3)
+  embedding VECTOR(1024)
 );
 ```
 
@@ -379,41 +363,64 @@ Here, the `embedding` column is capable of storing vectors with 3 dimensions. De
 > [!TIP]
 > The `mistral-embed` model generates embedding vectors of dimension 1024 for each text string, regardless of its length. So, this will be the value we use when we create the table.
 
-To retrieve vectors and calculate similarity, use `SELECT` statements and the built-in vector operators. For instance, you can find the top 5 most similar items to a given embedding using the following query:
 
-`SELECT * FROM documents ORDER BY embedding <-> '[3,1,2]' LIMIT 5;`
+	3.	Query for similar items:
 
-This query computes the Euclidean distance (L2 distance) between the given vector and the vectors stored in the items table, sorts the results by the calculated distance, and returns the top 5 most similar items.
+```SQL
+SELECT * FROM documents 
+ORDER BY embedding <-> '[3,1,2,...]' 
+LIMIT 5;
+```
 
-Supported distance functions include:
+This finds the top 5 most similar items using Euclidean distance.
 
-- `<->` - L2 distance
-- `<#>` - (negative) inner product
-- `<=>` - cosine distance
-- `<+>` - L1 distance (added in 0.7.0)
+By leveraging vector embeddings and efficient storage/querying mechanisms, we can significantly enhance the accuracy and relevance of LLM responses in various applications.
+
 
 ### RAG architecture
 
-![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/7cb3de66-c6a5-403e-9e05-8c141aaba749/4e92a201-4055-4789-9566-950054a552ae/Untitled.png)
+At a high-level, this is how the app will work:
 
-To provide the chatbot with extra information, this is what you need to do:
+1. The user sends a message.
+2. We convert the message into a vector embedding using an AI model.
+3. We query the database for the most similar text content based on the user's message embedding.
+4. We return the most similar text content as the response to the user's message.
+5. We pass the response to the LLM as a system prompt to generate the final response.
+6. The LLM generates the final response based on the user's message and the most similar text content.
+7. We returns the final response to the user.
 
-1. Convert the existing data set that we know is factually correct to vector embeddings
-2. When a user gives us a prompt, we need to convert it into a vector embedding
-3. Find the vector embedding in our data set that is closest to the prompt's vector embedding representation
-4. Return the actual data associated with our data set embedding
-5. Pass this data to the LLM
+<img width="1512" alt="RAG" src="https://github.com/user-attachments/assets/67888ef4-0ea4-4655-ad5d-3a0ba97918e9">
 
-This is where the Retrieval-Augmented Generation (RAG) architecture comes in. It combines the power of LLMs with vector embeddings to provide the most accurate answer to the user's prompt.
-
-## Exercise #2 - setting up the vector store
+## Exercise #2 - Use Postgres as a vector store
 
 ### Signing up for a Neon account
 
-To set up the vector store, you'll need to sign up for a Neon account. Neon is fully managed Postgres database that allows you to store and query vector embeddings in Postgres.
+To create your vector store, you'll need a [Neon account](https://console.neon.tech/signup). Neon provides a fully managed PostgreSQL database service that supports storing and querying vector embeddings.
 
-To set up the database, you can run the following command:
+Follow these steps to get started:
 
+1. Sign up for a Neon account using the link above.
+2. Complete the onboarding process, which includes creating a new Project.
+3. Once your Project is set up, you'll be directed to the Project Quickstart page.
+4. On this page, you'll find your database connection string. You'll need this to connect to your new database.
+
+<img width="1512" alt="Screenshot 2024-07-11 at 8 16 47 AM" src="https://github.com/m-abdelwahab/build-smarter-chatbots/assets/27310414/59c445e3-81ec-4463-8eac-9981f785c2ad">
+
+
+<img width="1512" alt="Screenshot 2024-07-11 at 8 17 07 AM" src="https://github.com/m-abdelwahab/build-smarter-chatbots/assets/27310414/1c840dde-2702-4135-91aa-86e4ddf847a6">
+
+
+➡️ `TODO`: 
+
+1. Add the connection string to the `.env` file. It should look like this:
+
+```bash
+MISTRAL_API_KEY=your-api-key
+DATABASE_URL=your-neon-connection-string
+```
+
+2. set up the database by running the following command in your terminal:
+ 
 ```bash
 npm run db:setup
 ```
@@ -463,19 +470,135 @@ const main = async () => {
 main().catch(console.error);
 ```
 
-The `main()` function connects to a database, defines a set of text samples, and generates embeddings for these samples using the Mistral AI model. It first installs the pgvector extension if it doesn't exist and then sets up a database table designed to store text content alongside their vector embeddings. Each text sample and its corresponding embedding is then inserted into the database.
+The `main()` function connects to a database, defines a set of text samples, and generates embeddings for these samples using the Mistral AI model. The pgvector extension is then installed if it doesn't exist and then table designed to store text content alongside their vector embeddings is created. Each text sample and its corresponding embedding is then inserted into the database.
 
-## Exercise #3 - adding RAG to the chatbot
+## Exercise #3 -  Implement RAG in your chatbot
 
 In this exercise, you will modify the `src/app/api/chat/route.ts` file to query the database for relevant information.
 
 Here are the steps that you need to take:
 
-- Connect to the Neon database using the `neon` function from the `@neondatabase/serverless` package.
-- Embed the user's message using the Mistral AI model.
-- Query the database for the most similar text content based on the user's message embedding.
-- Return the most similar text content as the response to the user's message.
-- Pass the response to the LLM as a system prompt to generate the final response.
+1. Connect to the Neon database using the `neon` function from the `@neondatabase/serverless` package.
+1. Embed the user's message using the Mistral AI model.
+1. Query the database for the most similar text content based on the user's message embedding. You can use the `<->` operator to calculate the Euclidean distance between the user's message embedding and the embeddings stored in the database. Sort the results by the calculated distance and return the most similar text content.
+1. Return the most similar text content as the response to the user's message.
+1. Pass the response to the LLM as a system prompt to generate the final response.
 
-Hint: use the `setup.ts` file to see how you can
 
+Open the file `app/api/chat/route.ts` in your project and replace the existing code with the following code snippet:
+
+```ts
+// app/api/chat/route.ts
+import { mistral } from "@ai-sdk/mistral";
+import { streamText, embed } from "ai";
+import { neon } from "@neondatabase/serverless";
+
+export async function POST(req: Request) {
+	const { messages } = await req.json();
+
+	// Get the user's last message
+	const prompt = messages[messages.length - 1].content;
+
+	// Embed the user's last message
+
+	// Connect to the Neon database
+
+	// find the most similar document to the user's last message
+
+	// Stream the user's messages and the most similar document to the model and include the document in the system message. Here's an example of how you can do this:
+
+  const documents = await sql`...`;
+
+  // The Vercel AI SDK, allows you to set a system message that provides additional context to the model. This message is not included in the final response to the user. You can use the following prompt to include the most similar document in the system message:
+  // "You have access to information that might help answer the user's question. Use this information if it's relevant to the user's query, but don't mention it explicitly unless asked. If the information isn't relevant, rely on your general knowledge to answer. Here is the information: <most-relevant-document>"
+	
+  const result = ...
+
+	return result.toAIStreamResponse();
+}
+```
+
+If you prefer, you can switch to the exercise-3 branch, which already includes this code snippet. To do so:
+	1.	Open your terminal.
+	2.	Run the command: git checkout exercise-3
+
+This branch contains the pre-configured code, allowing you to start working on the chat functionality immediately.
+
+>[!TIP]
+>You can use the `setup.ts` file as a reference throughout this exercise.
+
+Here are some additional resources you can use:
+- [API reference for the `embed()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/embed)
+- [Neon Serverless Driver documentation](https://neon.tech/docs/serverless/serverless-driver#use-the-driver-over-http)
+- [pgvector documentation on querying vectors](https://github.com/pgvector/pgvector?tab=readme-ov-file#querying)
+- [API reference for the `streamText()` function from the Vercel AI SDK core package](https://sdk.vercel.ai/docs/reference/ai-sdk-core/stream-text)
+- [Mistral AI provider documentation](https://sdk.vercel.ai/providers/ai-sdk-providers/mistral)
+
+
+To make sure that the chatbot is working as expected, you can start the development server (`npm run dev`) and submit a message. You should see a response from the chatbot that is relevant to the user's message.
+
+Here are some example prompts you can use to test the chatbot:
+
+> "What's the weather like today?"
+> "Tell me about the best beaches in the world"
+
+
+
+<details>
+  <summary>Solution - you can also run `git checkout exercise-3-solution` if you're working locally</summary>
+
+  Here's the solution to the exercise:
+
+  ```ts
+// app/api/chat/route.ts
+import { mistral } from "@ai-sdk/mistral";
+import { streamText, embed } from "ai";
+import { neon } from "@neondatabase/serverless";
+
+export async function POST(req: Request) {
+    const { messages } = await req.json();
+
+    // Get the user's last message
+    const prompt = messages[messages.length - 1].content;
+
+    // Embed the user's last message
+    const { embedding } = await embed({
+      model: mistral.embedding("mistral-embed"),
+      value: prompt,
+    });
+
+    const sql = neon(process.env.DATABASE_URL!);
+
+    // find the most similar document to the user's last message
+    const documents = await sql`
+      SELECT * FROM documents
+      ORDER BY embedding <->  ${JSON.stringify(embedding)}::vector
+      LIMIT 1
+    `;
+
+    // Stream the user's messages and the most similar document to the model and include the document in the system message
+    const result = await streamText({
+      model: mistral("open-mistral-7b"),
+      messages,
+      system: `You have access to relevant information that might help answer the user's question. Here it is: "${documents.map((d) => d.content).join(" ")}". Use this information if it's relevant to the user's query, but don't mention it explicitly unless asked. If the information isn't relevant, rely on your general knowledge to answer.`,
+    });
+
+    return result.toAIStreamResponse();
+  }
+  ```
+</details>
+
+You can find the complete solution in the `final` branch of the repository.
+
+
+## Conclusion
+
+You've built an AI chatbot that uses external data for more accurate responses.
+
+You can extend this by:
+  •	Handling more complex queries
+  •	Integrating different AI models
+  •	Working with various data types (images, audio, etc.) and potentially introducing a  framework like [Langchain](https://www.langchain.com/langchain) that allows you to embed any type of data into a vector
+  •	Building other AI-powered apps needing external data
+
+Happy coding! 🚀
