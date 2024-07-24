@@ -77,7 +77,7 @@ build-better-chatbots/
 ┃   ┣ globals.css
 ┃   ┣ layout.tsx
 ┃   ┗ page.tsx
-┣ .env.local.example
+┣ .env.example
 ┣ .gitignore
 ┣ README.md
 ┣ next-env.d.ts
@@ -204,21 +204,19 @@ const model = mistral('mistral-large-latest');
 
 The Vercel AI SDK will look for a `MISTRAL_API_KEY` environment variable. To generate an API key, you must do the following:
 
-1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
-2. Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
-3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
-
-➡️ `TODO:` Install the Mistral AI provider package
-➡️ `TODO`: Copy the `.env.local.example` file to a new file called `.env.local` and add your API key there. It should look like this: 
+➡️ `TODO:` 
+1. Install the Mistral AI provider package
+2. Generate an API key from the Mistral console.
+   1. Create a Mistral account or sign in at [console.mistral.ai](https://console.mistral.ai).
+   2.  Then, navigate to "Workspace" and "Billing" to add your payment information and activate payments on your account.
+   3. After that, go to the "API keys" page and make a new API key by clicking "Create new key". Make sure to copy the API key, save it safely, and do not share it with anyone.
+3. Copy the `.env.example` file to a new file called `.env` and add your API key there. It should look like this: 
 
 ```bash
 MISTRAL_API_KEY=your-api-key
 # Will be added later, you can leave it empty for now
 DATABASE_URL=
 ```
-
->[!NOTE]
-> The `.env` file included by Stackblitz will work as well but `.env.local` is the recommended approach when using environment variables locally with Next.js.
 
 
 Once you install the provider package and have set up an API key, you can then use functions from the Vercel AI SDK core package (it has been added to your project already and was installed by running `npm install ai`). 
@@ -250,7 +248,7 @@ Here are some resources you can use:
 You can test that the chatbot is working by starting the development server (`npm run dev`) and submitting a message. You should see a response from the chatbot if everything was set up correctly.
 
 <details>
-  <summary>Solution</summary>
+  <summary>Solution you can also run `git checkout exercise-1-solution` if you're working locally </summary>
   Here's the solution to the exercise:
 
   ```ts
@@ -414,7 +412,7 @@ Follow these steps to get started:
 
 ➡️ `TODO`: 
 
-1. Add the connection string to the `.env.local` file. It should look like this:
+1. Add the connection string to the `.env` file. It should look like this:
 
 ```bash
 MISTRAL_API_KEY=your-api-key
@@ -487,7 +485,7 @@ Here are the steps that you need to take:
 1. Pass the response to the LLM as a system prompt to generate the final response.
 
 
-To get started, you can use the following code snippet:
+Open the file `app/api/chat/route.ts` in your project and replace the existing code with the following code snippet:
 
 ```ts
 // app/api/chat/route.ts
@@ -520,6 +518,12 @@ export async function POST(req: Request) {
 }
 ```
 
+If you prefer, you can switch to the exercise-3 branch, which already includes this code snippet. To do so:
+	1.	Open your terminal.
+	2.	Run the command: git checkout exercise-3
+
+This branch contains the pre-configured code, allowing you to start working on the chat functionality immediately.
+
 >[!TIP]
 >You can use the `setup.ts` file as a reference throughout this exercise.
 
@@ -541,7 +545,7 @@ Here are some example prompts you can use to test the chatbot:
 
 
 <details>
-  <summary>Solution</summary>
+  <summary>Solution - you can also run `git checkout exercise-3-solution` if you're working locally</summary>
 
   Here's the solution to the exercise:
 
