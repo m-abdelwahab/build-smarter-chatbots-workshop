@@ -596,9 +596,9 @@ You can find the complete solution in the `final` branch of the repository.
 You've built an AI chatbot that uses external data for more accurate responses.
 
 You can extend this by:
-  •	Handling more complex queries
-  •	Integrating different AI models
-  •	Working with various data types (images, audio, etc.) and potentially introducing a  framework like [Langchain](https://www.langchain.com/langchain) that allows you to embed any type of data into a vector
-  •	Building other AI-powered apps needing external data
+- Handling more complex queries
+- Integrating different AI models
+- Working with various data types (images, audio, etc.) and potentially introducing a  framework like [Langchain](https://www.langchain.com/langchain) that allows you to embed any type of data into a vector
+- Building other AI-powered apps needing external data
 
 Happy coding! 🚀
